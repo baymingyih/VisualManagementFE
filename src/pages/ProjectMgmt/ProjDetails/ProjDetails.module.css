@@ -1,0 +1,35 @@
+.project_code {
+    color: #545454;
+    opacity: 80%;
+    font-size: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 5px
+}
+
+.title:hover {
+    background-color: #f1f1f1;
+}
+
+.title:focus {
+    background-color: #f1f1f1;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #545454;
+    opacity: 85%;
+    margin: 4px 0;
+}
+
+.text:hover {
+    background-color: #f1f1f1;
+}
+
+.text:focus {
+    background-color: #f1f1f1;
+}

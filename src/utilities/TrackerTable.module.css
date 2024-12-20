@@ -1,0 +1,35 @@
+.bodyWrapperMain {
+    margin: 10px;
+}
+
+.detailsDrawerContainer {
+    height: 80vh;
+}
+
+.priority {
+    font-size: 1.2rem;
+}
+
+.header {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.actionBar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.overdue {
+    color: rgb(251, 77, 71);
+    font-weight: 500;
+  }
+
+.selected {
+    background-color: rgba(0, 106, 255, 0.051);
+}
+
+.tableHover tbody tr:hover {
+    cursor: pointer;
+}

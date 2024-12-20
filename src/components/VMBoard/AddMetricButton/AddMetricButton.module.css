@@ -1,0 +1,28 @@
+.add_button_wrapper {
+    width: 100%; 
+    text-align: center; 
+    position: relative;
+}
+
+.add_button { 
+    border: 1px solid #D9D9D9;
+    width: 40%;
+    margin: auto;
+    background-color: white;
+    z-index: 2;
+}
+
+.add_button:hover {
+    border: 1px solid #D9D9D9;
+    background-color: white;
+}
+
+.add_button_wrapper:after {
+    content: "";
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid #D9D9D9;
+    position: absolute;
+    bottom: 50%;
+
+}

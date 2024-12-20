@@ -1,0 +1,35 @@
+.title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.valueStyle {
+    /* color: #545454; */
+    font-weight: 500
+}
+
+.rowStyle {
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.colStyle {
+    width: 12rem;
+}
+
+.drawerSubTitle {
+    color: #545454;
+    opacity: 85%;
+    font-weight: 500
+}
+
+.tableHover tbody tr:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,57 @@
+.detailsHeader {
+    margin: 0 10px;
+}
+
+.detailsID {
+    color: rgb(158, 158, 158);
+    font-weight: 500;
+    font-size: 0.9rem;
+    /* display: flex;
+    align-items: center; */
+}
+
+.detailsTitle {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.detailsTitle:hover {
+    background-color: #f1f1f1;
+}
+
+.detailsTitle:focus {
+    background-color: #f1f1f1;
+}
+
+.detailsSubTitle {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #545454;
+    opacity: 85%;
+    margin: 4px 0;
+}
+
+.descriptionStyle:hover {
+    background-color: #f1f1f1;
+}
+
+.descriptionStyle:focus {
+    background-color: #f1f1f1;
+}
+
+.escalateTitle {
+    color: rgb(101, 101, 101);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.loadingLogo {
+    margin: 0 8px
+}
+
+.selectMenuTitle {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #545454;
+    opacity: 85%;
+}

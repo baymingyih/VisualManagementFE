@@ -1,0 +1,16 @@
+.title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 10px 0 10px 0;
+    color: #545454
+}
+
+.subtitle {
+    display:  flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tableHover tbody tr:hover {
+    cursor: pointer;
+}

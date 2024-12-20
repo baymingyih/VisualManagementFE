@@ -1,0 +1,81 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+        Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+* {
+    box-sizing: border-box;
+} 
+
+/*
+CUSTOM ANTD PROPERTIES
+*/
+
+.ant-picker.ant-picker-borderless.hoverable {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ant-picker.ant-picker-borderless.hoverable:hover {
+    background: #ebecf0 !important;
+}
+
+.hoverable .ant-picker-input > input {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.board > .hoverable .ant-picker-input > input {
+    font-size: 24px !important;
+    text-align: right;
+}
+
+.modal > .hoverable .ant-picker-input > input {
+    font-size: 20px !important;
+    text-align: right;
+}
+
+
+
+
+.vm-column > .ant-card-head:after {
+    width: 100%;
+    background: #1890ff !important;
+    height: 3px;
+}
+
+.editable-cell {
+    position: relative;
+}
+
+.editable-cell-value-wrap {
+    padding: 5px 12px;
+    cursor: pointer;
+}
+
+.editable-row:hover .editable-cell-value-wrap {
+    padding: 4px 11px;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+}
+
+[data-theme="dark"] .editable-row:hover .editable-cell-value-wrap {
+    border: 1px solid #434343;
+}
+
+.ant-collapse-header {
+    padding: 10px 0 0 0 !important;
+    color: #1890ff !important;
+}
+
+.ant-collapse-content-box {
+    padding: 10px 0 0 0 !important;
+}

@@ -1,0 +1,8 @@
+.tableHover tbody tr:hover {
+    cursor: pointer;
+}
+
+.overdue {
+    color: rgb(251, 77, 71);
+    font-weight: 500;
+}

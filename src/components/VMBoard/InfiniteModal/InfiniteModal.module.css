@@ -1,0 +1,14 @@
+/**
+Temporary measures. Must replace the theme
+*/
+.test {
+    bottom: -10px !important;
+}
+
+.test > li.slick-active button {
+    background: black !important;
+}
+
+.no_arrow::before {
+    display: none;
+}
