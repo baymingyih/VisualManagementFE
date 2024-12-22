@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client_main"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_MAIN")
+}
+
+model action_users {
+  id            Int      @id @default(autoincrement())
+  actionId      Int
+  userId        Int?
+  dateAllocated DateTime @db.DateTime(0)
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  updated_at    DateTime @default(now()) @db.Timestamp(0)
+  actions       actions  @relation(fields: [actionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "actionId_actionUsers")
+  users         users?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userId_actionUsers")
+
+  @@index([actionId], map: "actionId_actionUsers_idx")
+  @@index([userId], map: "userId_actionUsers_idx")
+}
+
+model actions {
+  id                 Int               @id @default(autoincrement())
+  completedDateTime  DateTime?         @db.DateTime(0)
+  deadlineDateTime   DateTime          @db.DateTime(0)
+  title              String            @db.VarChar(300)
+  description        String?           @db.Text
+  priority           Int
+  created_at         DateTime          @default(now()) @db.Timestamp(0)
+  updated_at         DateTime          @default(now()) @db.Timestamp(0)
+  teamId             Int
+  status             Int
+  escalatedFrom      Int?
+  escalatedTo        Int?
+  action_users       action_users[]
+  escalatedfrom_team teams?            @relation("escalatedFromTeam", fields: [escalatedFrom], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "escalatedfrom_teamId_actions")
+  escalatedto_team   teams?            @relation("escalatedToTeam", fields: [escalatedTo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "escalatedto_teamId_actions")
+  teams              teams             @relation("teamId", fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "teamId_actions")
+  project_actions    project_actions[]
+
+  @@index([teamId], map: "teamId_idx")
+  @@index([escalatedTo], map: "escalatedTo_idx")
+  @@index([escalatedFrom], map: "escalatedFrom_idx")
+}
+
+model issues {
+  id          Int           @id @default(autoincrement())
+  projectId   Int
+  title       String        @db.VarChar(300)
+  description String?       @db.MediumText
+  status      issues_status
+  created_at  DateTime      @default(now()) @db.Timestamp(0)
+  updated_at  DateTime      @default(now()) @db.Timestamp(0)
+  teams       teams         @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_issues")
+
+  @@index([projectId], map: "projectId_issues_idx")
+}
+
+model metric_category {
+  categoryName String         @db.VarChar(50)
+  columnId     Int
+  id           Int            @id @default(autoincrement())
+  teamId       Int
+  teams        teams          @relation(fields: [teamId], references: [id], onDelete: Cascade, map: "metric_category_teamid")
+  team_metrics team_metrics[]
+
+  @@index([teamId], map: "metric_category_teamid_idx")
+}
+
+model metric_multiple_target {
+  metricId        Int
+  targetStartDate DateTime @db.Date
+  targetInterval  Int
+  targetValue     Int
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @default(now()) @db.Timestamp(0)
+  metrics         metrics  @relation(fields: [metricId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "metric_multiple_target_ibfk_1")
+
+  @@id([metricId, targetStartDate, targetInterval, targetValue])
+}
+
+model metric_range_target {
+  metricId       Int
+  targetRangeMin Float
+  targetRangeMax Float
+  created_at     DateTime @default(now()) @db.Timestamp(0)
+  updated_at     DateTime @default(now()) @db.Timestamp(0)
+  metrics        metrics  @relation(fields: [metricId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "metric_range_target_ibfk_1")
+
+  @@id([targetRangeMin, targetRangeMax, metricId])
+  @@index([metricId], map: "metric_range_target_ibfk_1")
+}
+
+model metric_single_target {
+  metricId    Int
+  targetValue Float
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  updated_at  DateTime @default(now()) @db.Timestamp(0)
+  above       Int      @db.TinyInt
+  metrics     metrics  @relation(fields: [metricId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "metric_single_target_ibfk_1")
+
+  @@id([metricId, targetValue])
+}
+
+model metrics {
+  id                     Int                        @id @default(autoincrement())
+  metricName             String                     @db.VarChar(255)
+  trackingFrequency      metrics_trackingFrequency?
+  targetType             metrics_targetType?
+  created_at             DateTime                   @default(now()) @db.Timestamp(0)
+  updated_at             DateTime                   @default(now()) @db.Timestamp(0)
+  metric_multiple_target metric_multiple_target[]
+  metric_range_target    metric_range_target[]
+  metric_single_target   metric_single_target[]
+  project_metrics        project_metrics[]
+  team_metrics           team_metrics[]
+}
+
+model organisations {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(300)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  teams      teams[]
+  users      users[]
+}
+
+model team_members {
+  userId     Int
+  teamId     Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  role       Int      @db.TinyInt
+  teams      teams    @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "teamId_teamMembers")
+  users      users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "userId_teamMembers")
+
+  @@id([userId, teamId])
+  @@index([teamId], map: "teamId_idx")
+  @@index([userId], map: "userId_idx")
+}
+
+model team_metrics {
+  metricId         Int
+  teamId           Int
+  metricRowId      Int
+  metricCategoryId Int
+  creator          Int             @db.TinyInt
+  defaultView      Int             @db.TinyInt
+  metric_category  metric_category @relation(fields: [metricCategoryId], references: [id], onDelete: Cascade, map: "FK_METRICSCATEGORYID_ID")
+  metrics          metrics         @relation(fields: [metricId], references: [id], onDelete: Cascade, map: "FK_METRICS_METRICID")
+  teams            teams           @relation(fields: [teamId], references: [id], onDelete: Cascade, map: "FK_TEAMS_TEAMID")
+
+  @@id([metricId, teamId])
+  @@index([metricCategoryId], map: "FK_METRICSCATEGORYID_METRICCATEGORYID_idx")
+  @@index([teamId], map: "FK_TEAMS_TEAMID_idx")
+}
+
+model teams {
+  id                    Int               @id @default(autoincrement())
+  name                  String            @db.VarChar(100)
+  organisationId        Int
+  tier                  Int
+  created_at            DateTime          @default(now()) @db.Timestamp(0)
+  updated_at            DateTime          @default(now()) @db.Timestamp(0)
+  reportsTo             Int?
+  actions_escalatedFrom actions[]         @relation("escalatedFromTeam")
+  actions_escalatedTo   actions[]         @relation("escalatedToTeam")
+  actions               actions[]         @relation("teamId")
+  issues                issues[]
+  metric_category       metric_category[]
+  projects              projects[]
+  team_members          team_members[]
+  team_metrics          team_metrics[]
+  organisations         organisations     @relation(fields: [organisationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organisationId_teams")
+  reportTo              teams?            @relation("reportsToTeam", fields: [reportsTo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reportsTo_teams")
+  reportFrom            teams[]           @relation("reportsToTeam")
+
+  @@index([organisationId], map: "organisationId_teams_idx")
+  @@index([reportsTo], map: "reportsTo_teams")
+}
+
+model users {
+  id              Int               @id @default(autoincrement())
+  firstName       String            @db.VarChar(100)
+  lastName        String            @db.VarChar(100)
+  email           String            @db.VarChar(300)
+  organisationId  Int
+  active          Int               @db.TinyInt
+  created_at      DateTime          @default(now()) @db.Timestamp(0)
+  updated_at      DateTime          @default(now()) @db.Timestamp(0)
+  lastActive      DateTime
+  orgAdmin        Int               @db.TinyInt @default(0)
+  external        Int               @db.TinyInt @default(0)
+  action_users    action_users[]
+  project_members project_members[]
+  projects        projects[]
+  team_members    team_members[]
+  organisations   organisations     @relation(fields: [organisationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organisationId_users")
+
+  @@index([organisationId], map: "organisation_idx")
+}
+
+model projects {
+  id                Int               @id @default(autoincrement())
+  teamId            Int
+  title             String            @db.VarChar(300)
+  problem           String            @db.Text
+  goal              String            @db.Text
+  analysis          String?           @db.Text
+  results           String?           @db.Text
+  status            Int
+  startDateTime     DateTime          @db.DateTime(0)
+  dueDateTime       DateTime          @db.DateTime(0)
+  completedDateTime DateTime?         @db.DateTime(0)
+  ownerId           Int?
+  starred           Int               @db.TinyInt
+  created_at        DateTime          @default(now()) @db.Timestamp(0)
+  updated_at        DateTime          @default(now()) @db.Timestamp(0)
+  project_actions   project_actions[]
+  project_members   project_members[]
+  project_metrics   project_metrics[]
+  ownerId_project   users?            @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ownerId_projects")
+  teams             teams             @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "teamId_projects")
+
+  @@index([teamId], map: "teamId_projects_idx")
+  @@index([ownerId], map: "ownerId_projects_idx")
+}
+
+model project_actions {
+  id         Int      @id @default(autoincrement())
+  projectId  Int
+  actionId   Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  actions    actions  @relation(fields: [actionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "actionId_projectActions")
+  projects   projects @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_projectActions")
+
+  @@index([projectId], map: "projectId_projectActions_idx")
+  @@index([actionId], map: "actionId_projectActions_idx")
+}
+
+model project_metrics {
+  id         Int      @id @default(autoincrement())
+  projectId  Int
+  metricId   Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  metrics    metrics  @relation(fields: [metricId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "metricId_projectMetrics")
+  projects   projects @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_projectMetrics")
+
+  @@index([projectId], map: "projectId_projectMetrics_idx")
+  @@index([metricId], map: "metricId_projectMetrics_idx")
+}
+
+model project_members {
+  id         Int      @id @default(autoincrement())
+  projectId  Int
+  memberId   Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  members    users    @relation(fields: [memberId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "memberId_projectMembers")
+  projects   projects @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "projectId_projectMembers")
+
+  @@index([projectId], map: "projectId_projectMembers_idx")
+  @@index([memberId], map: "memberId_projectMembers_idx")
+}
+
+model nauth_account {
+  id                String     @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?    @db.Text
+  access_token      String?    @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?    @db.Text
+  session_state     String?
+  nauth_user        nauth_user @relation(fields: [userId], references: [id], onDelete: Cascade, map: "_NAuth_Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "_NAuth_Account_provider_providerAccountId_key")
+  @@index([userId], map: "_NAuth_Account_userId_fkey")
+  @@map("_nauth_account")
+}
+
+model nauth_session {
+  id           String     @id
+  sessionToken String     @unique(map: "_NAuth_Session_sessionToken_key")
+  userId       String
+  expires      DateTime
+  nauth_user   nauth_user @relation(fields: [userId], references: [id], onDelete: Cascade, map: "_NAuth_Session_userId_fkey")
+
+  @@index([userId], map: "_NAuth_Session_userId_fkey")
+  @@map("_nauth_session")
+}
+
+model nauth_user {
+  id            String          @id
+  name          String?
+  email         String?         @unique(map: "_NAuth_User_email_key")
+  emailVerified DateTime?
+  image         String?
+  nauth_account nauth_account[]
+  nauth_session nauth_session[]
+
+  @@map("_nauth_user")
+}
+
+model nauth_verificationtoken {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  identifier String
+  token      String   @unique(map: "_NAuth_VerificationToken_token_key")
+  expires    DateTime
+
+  @@unique([identifier, token], map: "_NAuth_VerificationToken_identifier_token_key")
+  @@map("_nauth_verificationtoken")
+}
+
+enum metrics_trackingFrequency {
+  Daily
+  Weekly
+  Monthly
+  Yearly
+}
+
+enum metrics_targetType {
+  Simple
+  Multiple
+  Range
+}
+
+enum issues_status {
+  Open
+  Closed
+}
